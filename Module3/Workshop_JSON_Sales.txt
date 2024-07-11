@@ -1,0 +1,54 @@
+[{
+    "staffId":1,
+    "item":"Wi-Fi Adapter",
+    "price":40.00,
+    "date":"01-09-2022"
+},
+{
+    "staffId":1,
+    "item":"Wi-Fi Adapter",
+    "price":40.00,
+    "date":"03-09-2022"
+},
+{
+    "staffId":1,
+    "item":"USB Cable",
+    "price":5.00,
+    "date":"03-09-2022"
+},
+{
+    "staffId":1,
+    "item":"Thermal Paste",
+    "price":7.50,
+    "date":"05-09-2022"
+},
+{
+    "staffId":1,
+    "item":"Wi-Fi Adapater",
+    "price":40.00,
+    "date":"07-09-2022"
+},
+{
+    "staffId":2,
+    "item":"USB Stick",
+    "price":10.99,
+    "date":"06-09-2022"
+},
+{
+    "staffId":3,
+    "item":"Pre-built PC",
+    "price":1999.95,
+    "date":"02-09-2022"
+},
+{
+    "staffId":3,
+    "item":"USB Cable",
+    "price":5.00,
+    "date":"02-09-2022"
+},
+{
+    "staffId":3,
+    "item":"HDMI Cable",
+    "price":15.45,
+    "date":"02-09-2022"
+}]
