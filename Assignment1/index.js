@@ -35,5 +35,5 @@ function specificNeo(orbit_class, pha, neoWiseProperty) {
   return apolloOrbitClass;
 }
 
-console.table(specificNeo("Apollo", true, "i_deg"));
-console.table(specificNeo("Aten", true, "i_deg"));
+console.table(specificNeo("Comet", null, "i_deg"));
+console.table(specificNeo("Aten", true, "q_au_2"));
