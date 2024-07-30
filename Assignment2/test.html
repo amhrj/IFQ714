@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Append Option Example</title>
+</head>
+<body>
+    <select name="filter_source_airport" id="filterSourceAirportSelect">
+        <option value="any">Any</option>
+    </select>
+
+    <script>
+        // Assuming combinedData is already defined and available
+        const combinedData = [
+            { source_airport: { city: 'New York' } },
+            { source_airport: { city: 'Los Angeles' } },
+            { source_airport: { city: 'Chicago' } }
+            // Add more flight data as needed
+        ];
+
+        window.onload = function () {
+            const sourceAirports = combinedData.map((flight) => flight.source_airport.city);
+            const selectElement = document.getElementById("filterSourceAirportSelect");
+
+            sourceAirports.forEach((city) => {
+                const newOption = document.createElement('option');
+                newOption.value = city;
+                newOption.text = city;
+                selectElement.appendChild(newOption);
+            });
+        };
+    </script>
+</body>
+</html>
