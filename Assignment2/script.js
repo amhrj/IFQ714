@@ -115,7 +115,19 @@ async function fetchData() {
       newOption.value = city;
       newOption.text = city;
       selectElement.appendChild(newOption);
+      
     });
+
+    const airportDataSourceAirport = [...new Set(combinedUniqueRoute.map((flight) => flight.source_airport.city))];
+    const selectElementCity = document.getElementById("filterCitySelect");
+
+    airportDataSourceAirport.forEach((city) => {
+      const newOption = document.createElement("option");
+      newOption.value = city;
+      newOption.text = city;
+      selectElementCity.appendChild(newOption);
+    }
+    );
 
     const destinationAirports = [
       ...new Set(combinedUniqueRoute.map((flight) => flight.destination_airport.city)),
@@ -170,6 +182,12 @@ function flightDetail(city) {
   return originCity;
 }
 
+function flightDetailAirportData(city) {
+  return combinedUniqueRoute.filter(flight => 
+    flight.source_airport.city.toLowerCase().startsWith(city.substring(0, 3))
+  );
+}
+
 function flightDetailDestination(city) {
   destinationCity = []; // Clear previous results
   const filteredFlights = combinedUniqueRoute.filter(
@@ -197,7 +215,53 @@ function flightDetailAircraft(aircraft) {
   return aircrafts;
 }
 
+function checkMatchedFlights() {
+  const sourceAirport = document.getElementById("filterSourceAirportSelect").value;
+  const destinationAirport = document.getElementById("filterDestinationAirportSelect").value;
+  const airline = document.getElementById("filterAirlineSelect").value;
+  const aircraft = document.getElementById("filterAircraftSelect").value;
 
+  let matchedFlights = combinedUniqueRoute;
+
+  if (sourceAirport !== "any") {
+    matchedFlights = matchedFlights.filter(
+      (flight) => flight.source_airport.city === sourceAirport
+    );
+  }
+
+  if (destinationAirport !== "any") {
+    matchedFlights = matchedFlights.filter(
+      (flight) => flight.destination_airport.city === destinationAirport
+    );
+  }
+
+  if (airline !== "any") {
+    matchedFlights = matchedFlights.filter(
+      (flight) => flight.airline.name === airline
+    );
+  }
+
+  if (aircraft !== "any") {
+    matchedFlights = matchedFlights.filter(
+      (flight) => flight.aircraft[0] === aircraft
+    );
+  }
+
+  displayFilteredFlights(matchedFlights);
+}
+
+function checkMatchedAirPortData() {
+  const city = document.getElementById("filterCitySelect").value;
+  const airportdata = flightDetail(city);
+  displayFilteredAirportData(airportdata);
+  
+}
+
+function searchAirportName() {
+  const city = document.getElementById("filterSearchTermInput").value;
+  const airportdata = flightDetailAirportData(city);
+  displayFilteredAirportData(airportdata);
+}
 
 function reset() {
   const flightFilterDisplayDiv = document.getElementById("flightFilterDisplayDiv");
@@ -208,11 +272,22 @@ function reset() {
   flightFilterDisplayDiv.innerHTML = '';
 }
 
+function isAnyFilterSetToAny(elementIds) {
+  return elementIds.some(id => document.getElementById(id).value === 'any');
+};
+
+const filterElementIds = [
+  "filterSourceAirportSelect",
+  "filterDestinationAirportSelect",
+  "filterAirlineSelect",
+  "filterAircraftSelect"
+];
+
 function displayFilteredFlights(flights) {
   const flightFilterDisplayDiv = document.getElementById("flightFilterDisplayDiv");
   flightFilterDisplayDiv.innerHTML = ''; // Clear previous results
-  if (flights.length === 0) {
-    flightFilterDisplayDiv.innerHTML = "<p>No flights available for the selected city.</p>";
+  if (flights.length === 0) { // || isAnyFilterSetToAny(filterElementIds)
+    flightFilterDisplayDiv.innerHTML = "<p>No flights available for the selected options.</p>";
     return;
   }
 
@@ -244,39 +319,45 @@ function displayFilteredFlights(flights) {
   `;
 }
 
+function displayFilteredAirportData(flights) {
+  const filterCitySelectDiv = document.getElementById("airportFilterDisplayDiv");
+  filterCitySelectDiv.innerHTML = ''; // Clear previous results
+
+  const tableHeaders = `
+    <tr>
+      <th>City</th>
+      <th>Name</th>
+      <th>Latitude</th>
+      <th>Longitude</th>
+      <th>iata</th>
+    </tr>
+  `;
+  const tableRows = flights.map(flight => `
+    <tr>
+      <td>${flight.source_airport.city}</td>
+      <td>${flight.source_airport.name}</td>
+      <td>${flight.source_airport.latitude}</td>
+      <td>${flight.source_airport.longitude}</td>
+      <td>${flight.source_airport.iata}</td>
+    </tr>
+  `).join('');
+
+  filterCitySelectDiv.innerHTML = `
+    <table>
+      <thead>${tableHeaders}</thead>
+      <tbody>${tableRows}</tbody>
+    </table>
+  `;
+}
+
+  
 window.onload = function () {
   fetchData();
-  document
-    .getElementById("filterSourceAirportSelect")
-    .addEventListener("change", function (e) {
-      const selectedCity = e.target.value;
-      console.log("This is selected City: ", selectedCity);
-      const filteredFlights = flightDetail(selectedCity);
-      console.log("This is filtered Flights: ", filteredFlights);
-      displayFilteredFlights(filteredFlights);
-    });
 
-  document.getElementById("filterDestinationAirportSelect").addEventListener("change", function (e) {
-    const selectedCity = e.target.value;
-    console.log("This is selected City: ", selectedCity);
-    const filteredFlights = flightDetailDestination(selectedCity);
-    console.log("This is filtered Flights: ", filteredFlights);
-    displayFilteredFlights(filteredFlights);
-  });
-
-  document.getElementById("filterAirlineSelect").addEventListener("change", function (e) {
-    const selectedAirline = e.target.value;
-    console.log("This is selected Airline: ", selectedAirline);
-    const filteredFlights = flightDetailAirline(selectedAirline);
-    console.log("This is filtered Flights: ", filteredFlights);
-    displayFilteredFlights(filteredFlights);
-  });
-
-  document.getElementById("filterAircraftSelect").addEventListener("change", function (e) {
-    const selectedAircraft = e.target.value;
-    console.log("This is selected Aircraft: ", selectedAircraft);
-    const filteredFlights = flightDetailAircraft(selectedAircraft);
-    console.log("This is filtered Flights: ", filteredFlights);
-    displayFilteredFlights(filteredFlights);
-  });
+  document.getElementById("filterSourceAirportSelect").addEventListener("change", checkMatchedFlights);
+  document.getElementById("filterDestinationAirportSelect").addEventListener("change", checkMatchedFlights);
+  document.getElementById("filterAirlineSelect").addEventListener("change", checkMatchedFlights);
+  document.getElementById("filterAircraftSelect").addEventListener("change", checkMatchedFlights);
+  document.getElementById("filterCitySelect").addEventListener("change", checkMatchedAirPortData);
+  document.getElementById("filterSearchTermInput").addEventListener("input", searchAirportName);
 };
